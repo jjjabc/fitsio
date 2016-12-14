@@ -313,6 +313,17 @@ func (img *imageHDU) Write(data interface{}) error {
 			}
 		}
 
+	case []uint16:
+		if hdr.Bitpix() != 16 {
+			return fmt.Errorf("fitsio: got a %T but bitpix!=%d", data, hdr.Bitpix())
+		}
+		for _, v := range data {
+			err = enc.Encode(&v)
+			if err != nil {
+				return fmt.Errorf("fitsio: %v", err)
+			}
+		}
+
 	case []int32:
 		if hdr.Bitpix() != 32 {
 			return fmt.Errorf("fitsio: got a %T but bitpix!=%d", data, hdr.Bitpix())
