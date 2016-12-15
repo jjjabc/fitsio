@@ -39,7 +39,7 @@ func newHeader(cards []Card, htype HDUType, bitpix int, axes []int) *Header {
 func NewHeader(cards []Card, htype HDUType, bitpix int, axes []int) *Header {
 	hdr := newHeader(cards, htype, bitpix, axes)
 
-	// add (some) mandatory cards (BITPIX, NAXES, AXIS1, AXIS2)
+	// add (some) mandatory cards (SIMPLE,BITPIX, NAXES, AXIS1, AXIS2)
 	keys := make(map[string]struct{}, len(cards))
 	for i := range hdr.cards {
 		card := &hdr.cards[i]
@@ -47,7 +47,18 @@ func NewHeader(cards []Card, htype HDUType, bitpix int, axes []int) *Header {
 		keys[k] = struct{}{}
 	}
 
-	dcards := make([]Card, 0, 3)
+	dcards := make([]Card, 0, 5)
+	
+	if htype==IMAGE_HDU{
+		if _, ok := keys["SIMPLE"]; !ok {
+			dcards = append(dcards, Card{
+				Name:    "SIMPLE",
+				Value:   true,
+				Comment: "STANDAED FITS FORMAT",
+			})
+		}
+	}
+
 	if _, ok := keys["BITPIX"]; !ok {
 		dcards = append(dcards, Card{
 			Name:    "BITPIX",
